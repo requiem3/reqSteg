@@ -37,7 +37,12 @@ def chiSquared(c):
 		testStatistic+=calcExpected(nMatrix[x][1],nMatrix[x][3],sumGreen,sumTotal)
 		testStatistic+=calcExpected(nMatrix[x][2],nMatrix[x][3],sumBlue,sumTotal)
 
-	print testStatistic #if testStatistic > freedom then something be amiss (possibly)
+	print "Test Statistic: " + str(testStatistic) #if testStatistic > freedom then something be amiss (possibly)
+	print "Freedom: " + str(freedom)
+	if testStatistic > freedom:
+		print "high possibility something is encoded based on chi-squared"
+	else:
+		print "nothing found with chi-squared test"
 	
 	
 def calcExpected(cVal,totalAllC,totalC,totalAll):
