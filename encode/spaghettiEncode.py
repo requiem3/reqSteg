@@ -22,7 +22,7 @@ def swapBits(swapVal):
 	if widthC < maxW:
 		pixel = carrier.getpixel((widthC,heightC))
 		binRGB = bin(pixel[0])[2:9] + str(swapVal)
-		carrier.putpixel((widthC,heightC),int(binRGB,2))
+		carrier.putpixel((widthC,heightC),(int(binRGB,2),pixel[1],pixel[2]))
 		pixel = carrier.getpixel((widthC,heightC))
 		widthC += 1
 	elif heightC < maxH:
@@ -30,7 +30,7 @@ def swapBits(swapVal):
 		widthC = 0
 		pixel = carrier.getpixel((widthC,heightC))
 		binRGB = bin(pixel[0])[2:9] + str(swapVal)
-		carrier.putpixel((widthC,heightC),int(binRGB,2))
+		carrier.putpixel((widthC,heightC),(int(binRGB,2),pixel[1],pixel[2]))
 		widthC += 1
 	else:
 		print 'too wordy, message doesnt fit'	
