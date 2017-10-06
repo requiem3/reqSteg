@@ -1,3 +1,5 @@
+#arg1 = 'chi' (only method for now, arg2=image
+
 from PIL import Image
 import sys
 
@@ -45,7 +47,6 @@ def calcExpected(cVal,totalAllC,totalC,totalAll):
 	
 if __name__ == "__main__": 
 	if sys.argv[1] == "chi":
-		print sys.argv[2]
 		chiSquared(sys.argv[2])
 	else:
 		print "no valid method for arg1"
