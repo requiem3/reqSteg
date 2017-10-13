@@ -7,7 +7,7 @@ import os
 class RGBEncoder(Encoder):
 
     def __init__(self):
-        self.key = "PLACEHOLDER"
+        self.key = "PLACEHOLDER"  # Here until I figure out how encryption could be implemented with class
 
     def encode(self, image_path, message):
         """
@@ -16,7 +16,7 @@ class RGBEncoder(Encoder):
         :param message: Message to encode
         :return: Modified image converted to RGB values
         """
-        if image_path.strip()[-1] is '\\' or image_path.strip()[-1] is '/':
+        if image_path.strip()[-1] is '\\' or image_path.strip()[-1] is '/':  # Strip trailing slashes ( \ or / )
             image_path = image_path[:-1]
 
         head, tail = os.path.split(image_path)
@@ -27,9 +27,9 @@ class RGBEncoder(Encoder):
             image_rgb = image.convert("RGB")
             message_bits = BitVector(textstring=message)
             message_bits.pad_from_right(16)  # Add 0x0000 as padding to represent NULL
-            print(message_bits)
+
             self.__swap_bits__(image_rgb, message_bits)
-            image_rgb.save(head + "/" + image_name + "encoded." + file_type)
+            image_rgb.save(head + "/" + image_name + "encoded." + file_type)  # Save new image to original directory
             return image_rgb
         else:
             raise EncodingError("The image not big enough for message")
@@ -46,7 +46,7 @@ class RGBEncoder(Encoder):
 
         width, height = image.size
         for j in range(height):
-            for i in range(width):
+            for i in range(width):  # Collect message bits until NULL terminator is reached
                 (red, green, blue) = image_rgb.getpixel((i, j))
                 if len(bit_string) >= 16 and bit_string[-16:] == "0000000000000000":
                     break
@@ -63,11 +63,10 @@ class RGBEncoder(Encoder):
                 else:
                     bit_string += bin(blue)[-2:]
 
-            else:
+            else:  # If inner loop breaks, break out of outer loop
                 continue
             break
 
-        print(bit_string)
         message_bit_vector = BitVector(bitstring=bit_string)
         return message_bit_vector.get_bitvector_in_ascii()
 
@@ -110,7 +109,7 @@ class RGBEncoder(Encoder):
         for bits in split_bit_list:
             (red, green, blue) = rgb_image.getpixel((i, j))
             encode_red, encode_green, encode_blue = bin(red), bin(green), bin(blue)
-            encode_red = encode_red[:-2] + str(bits[:2])
+            encode_red = encode_red[:-2] + str(bits[:2])  # Swap last 2 bits of color with 2 message bits
 
             if len(bits) >= 4:
                 encode_green = encode_green[:-2] + str(bits[2:4])
