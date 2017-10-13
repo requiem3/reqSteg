@@ -27,6 +27,7 @@ class RGBEncoder(Encoder):
             image_rgb = image.convert("RGB")
             message_bits = BitVector(textstring=message)
             message_bits.pad_from_right(16)  # Add 0x0000 as padding to represent NULL
+            print(message_bits)
             self.__swap_bits__(image_rgb, message_bits)
             image_rgb.save(head + "/" + image_name + "encoded." + file_type)
             return image_rgb
@@ -41,6 +42,34 @@ class RGBEncoder(Encoder):
         """
         image = Image.open(image_path)
         image_rgb = image.convert("RGB")
+        bit_string = ""
+
+        width, height = image.size
+        for j in range(height):
+            for i in range(width):
+                (red, green, blue) = image_rgb.getpixel((i, j))
+                if len(bit_string) >= 16 and bit_string[-16:] == "0000000000000000":
+                    break
+                else:
+                    bit_string += bin(red)[-2:]
+
+                if len(bit_string) >= 16 and bit_string[-16:] == "0000000000000000":
+                    break
+                else:
+                    bit_string += bin(green)[-2:]
+
+                if len(bit_string) >= 16 and bit_string[-16:] == "0000000000000000":
+                    break
+                else:
+                    bit_string += bin(blue)[-2:]
+
+            else:
+                continue
+            break
+
+        print(bit_string)
+        message_bit_vector = BitVector(bitstring=bit_string)
+        return message_bit_vector.get_bitvector_in_ascii()
 
     @staticmethod
     def __can_fit__(image, message):
@@ -77,16 +106,16 @@ class RGBEncoder(Encoder):
         width, height = rgb_image.size
         i = j = 0
 
-        split_bit_list = self.__chunk_list__(message_bits, 6)
+        split_bit_list = self.__chunk_list__(str(message_bits), 6)
         for bits in split_bit_list:
             (red, green, blue) = rgb_image.getpixel((i, j))
             encode_red, encode_green, encode_blue = bin(red), bin(green), bin(blue)
             encode_red = encode_red[:-2] + str(bits[:2])
 
-            if bits[2:4]:
+            if len(bits) >= 4:
                 encode_green = encode_green[:-2] + str(bits[2:4])
 
-            if bits[4:6]:
+            if len(bits) == 6:
                 encode_blue = encode_blue[:-2] + str(bits[4:6])
 
             rgb_image.putpixel((i, j), (int(encode_red, 2), int(encode_green, 2), int(encode_blue, 2)))
@@ -106,5 +135,6 @@ class EncodingError(ValueError):
 
 if __name__ == "__main__":
     test = RGBEncoder()
-    test.encode("D:/Coding Work/Public - For Github/reqSteg/images/stego.png", "this is a test message")
-
+    test.encode("D:/Coding Work/Public - For Github/reqSteg/images/stego.png", "Hello World!!")
+    t_string = test.decode("D:/Coding Work/Public - For Github/reqSteg/images/stegoencoded.png")
+    print(t_string)
